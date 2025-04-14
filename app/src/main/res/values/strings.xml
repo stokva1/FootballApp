@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Futbolive</string>
+    <string name="no_favourite_teams">No favourite teams yet.</string>
+    <string name="delete_confirmation_title">Delete from favourites</string>
+    <string name="delete_confirmation_message">Do you really want to delete from favourites?</string>
+    <string name="i_know_what_i_am_doing_label">I know what Im doing.</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_remove">Delete</string>
+</resources>

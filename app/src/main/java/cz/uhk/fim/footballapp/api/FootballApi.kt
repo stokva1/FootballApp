@@ -1,0 +1,23 @@
+package cz.uhk.fim.footballapp.api
+
+import cz.uhk.fim.footballapp.data.Match
+import cz.uhk.fim.footballapp.data.Team
+import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
+import java.util.Date
+
+interface FootballApi {
+
+    @GET("/fixtures")
+    suspend fun getMatches(@Query("date") date: String): Response<FootballResponse<List<Match>>>
+
+    @GET("/fixtures/events")
+    suspend fun getMatchDetail(
+        @Query("fixtures") fixtureId: Int
+    ): Response<Match>
+
+    @GET("/teams/{teamId}")
+    suspend fun getTeamDetailsById(@Path("teamId") teamId: Int): Response<FootballResponse<List<Team>>>
+}
