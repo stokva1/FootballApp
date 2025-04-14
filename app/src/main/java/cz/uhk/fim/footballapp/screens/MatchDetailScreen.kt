@@ -56,9 +56,9 @@ fun MatchDetailScreen(
             }
 
             is ApiResult.Success -> {
-                val match = (matchDetailResult as ApiResult.Success).data
-                if (match != null) {
-                    MatchItem(match, navController)
+                val matchDetail = (matchDetailResult as ApiResult.Success).data
+                if (matchDetail != null) {
+                    MatchItem(matchDetail.first(), navController)
                 } else {
                     Text(text = "Match not found", style = MaterialTheme.typography.bodyLarge)
                 }

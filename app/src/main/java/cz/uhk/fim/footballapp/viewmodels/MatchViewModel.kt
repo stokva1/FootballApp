@@ -19,8 +19,8 @@ class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
     private val _matchList = MutableStateFlow<ApiResult<List<Match>>>(ApiResult.Loading)
     val matchList: StateFlow<ApiResult<List<Match>>> = _matchList.asStateFlow()
 
-    private val _matchDetail = MutableStateFlow<ApiResult<Match>>(ApiResult.Loading)
-    val matchDetail: StateFlow<ApiResult<Match>> = _matchDetail.asStateFlow()
+    private val _matchDetail = MutableStateFlow<ApiResult< List<Match>>>(ApiResult.Loading)
+    val matchDetail: StateFlow<ApiResult<List<Match>>> = _matchDetail.asStateFlow()
 
     init {
 //        startAutoRefresh()
@@ -45,7 +45,7 @@ class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
                 if (response.isSuccessful) {
                     val data = response.body()?.data
                     if(data != null){
-                        val filteredData = data.filter { it.league.id in listOf(1, 2, 3, 39, 45, 61, 65, 78, 135, 140, 143, 528) }
+                        val filteredData = data.filter { it.league.id in listOf(82, 1, 2, 3, 39, 45, 61, 65, 78, 135, 140, 143, 528) }
 
                         _matchList.value = ApiResult.Success(filteredData)
 //                        _matchList.value = ApiResult.Success(data)
@@ -72,7 +72,7 @@ class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
             try {
                 val response = footballApi.getMatchDetail(id)
                 if (response.isSuccessful) {
-                    _matchDetail.value = ApiResult.Success(response.body()!!)
+                    _matchDetail.value = ApiResult.Success(response.body()!!.data)
                 } else {
                     _matchDetail.value = ApiResult.Error("Error fetching match detail: ${response.message()}")
                     Log.e("MatchViewModel", "Error fetching match detail: ${response.message()}")
@@ -83,5 +83,7 @@ class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
             }
         }
     }
+
+
 
 }

@@ -1,8 +1,10 @@
 package cz.uhk.fim.footballapp.items
 
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -56,44 +58,9 @@ fun MatchListItem(match: Match, navController: NavController){
         if (match.matchData.status.short in listOf("TBD", "NS")){
             Text(text = formatToLocalTime(match.matchData.date))
         } else if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")){
-//            Text(text = match.status)
-//            Text(text = match.minute.toString())
-            val infiniteTransition = rememberInfiniteTransition()
-            val scale by infiniteTransition.animateFloat(
-                initialValue = 0.8f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(
-                        durationMillis = 1400,
-                        easing = FastOutLinearInEasing
-                    ),
-                    repeatMode = RepeatMode.Reverse
-                )
-            )
 
-            Box(
-                modifier = Modifier
-                    .padding(end = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .graphicsLayer(
-                            scaleX = scale,
-                            scaleY = scale
-                        )
-                        .clip(CircleShape)
-                        .background(Color.Red.copy(alpha = 0.2f))
-                )
-
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red)
-                )
-            }
+            Text(text = match.matchData.status.elapsed.toString(),
+                color = Color.Red)
         } else if (match.matchData.status.short in listOf("FT", "AET", "PEN")){
             Text(text = "F")
         }else{
@@ -117,7 +84,9 @@ fun MatchListItem(match: Match, navController: NavController){
                     fontWeight = if (match.teams.home.winner == true) FontWeight.Bold else FontWeight.Normal
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = (match.goals.home ?: 0).toString())
+                Text(text = (match.goals.home ?: 0).toString(),
+                    color = if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")) Color.Red else Color.Black
+                )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -132,12 +101,10 @@ fun MatchListItem(match: Match, navController: NavController){
                     fontWeight = if (match.teams.away.winner == true) FontWeight.Bold else FontWeight.Normal
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = (match.goals.away ?: 0).toString())
+                Text(text = (match.goals.away ?: 0).toString(),
+                    color = if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")) Color.Red else Color.Black
+                )
             }
-        }
-
-        IconButton(onClick = {  navController.navigate(Routes.matchDetail(match.matchData.id.toString())) }) {
-            Icon(Icons.Filled.Info, contentDescription = "Detail")
         }
     }
     HorizontalDivider(

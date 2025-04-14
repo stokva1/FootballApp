@@ -1,5 +1,6 @@
 package cz.uhk.fim.footballapp.items
 
+import android.widget.ImageView
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -19,6 +20,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.KeyboardArrowLeft
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,11 +50,29 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import cz.uhk.fim.footballapp.consts.Routes
 import cz.uhk.fim.footballapp.data.Match
+import cz.uhk.fim.footballapp.utils.formatToLocalDateTime
 import cz.uhk.fim.footballapp.utils.formatToLocalTime
 
 @Composable
 fun MatchItem(match: Match, navController: NavController) {
     val context = LocalContext.current
+    val status = when {
+        match.matchData.status.short in listOf("TBD", "NS") -> "S"
+        match.matchData.status.short in listOf(
+            "1H",
+            "HT",
+            "2H",
+            "ET",
+            "BT",
+            "P",
+            "SUSP",
+            "INT",
+            "LIVE"
+        ) -> "L"
+
+        match.matchData.status.short in listOf("FT", "AET", "PEN") -> "F"
+        else -> "none"
+    }
 
     Column {
         Row(
@@ -48,7 +80,7 @@ fun MatchItem(match: Match, navController: NavController) {
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             // Domácí tým
             Column(
@@ -57,7 +89,7 @@ fun MatchItem(match: Match, navController: NavController) {
                     .weight(1f)
                     .clickable { navController.navigate(Routes.matchDetail(match.matchData.id.toString())) },
 
-            ) {
+                ) {
                 AsyncImage(
                     model = match.teams.home.logo,
                     contentDescription = "${match.teams.home.name} icon",
@@ -77,10 +109,12 @@ fun MatchItem(match: Match, navController: NavController) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (match.matchData.status.short in listOf("TBD", "NS")){
-                    Text(text = formatToLocalTime(match.matchData.date))
-                } else if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")){
-                    Text(text = "${match.goals.home} - ${match.goals.away}", style = MaterialTheme.typography.headlineMedium)
+                if (status == "S") {
+                    Text(
+                        text = formatToLocalDateTime(match.matchData.date),
+                        fontWeight = FontWeight.Bold
+                    )
+                } else if (status == "L") {
                     val infiniteTransition = rememberInfiniteTransition()
                     val scale by infiniteTransition.animateFloat(
                         initialValue = 0.8f,
@@ -117,14 +151,22 @@ fun MatchItem(match: Match, navController: NavController) {
                                 .background(Color.Red)
                         )
                     }
-                } else if (match.matchData.status.short in listOf("FT", "AET", "PEN")){
-                    Text(text = "${match.goals.home} - ${match.goals.away}", style = MaterialTheme.typography.headlineMedium)
+                } else if (status == "F") {
+                    Text(text = "F")
                 } else {
-                    Text(text = match.matchData.status.short, style = MaterialTheme.typography.headlineMedium)
+                    Text(
+                        text = match.matchData.status.short,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
                 }
+                Text(
+                    text = "${match.goals.home ?: 0} - ${match.goals.away ?: 0}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = if (status == "L") Color.Red else Color.Black
+                )
             }
 
-            Spacer(modifier = Modifier.width(16.dp)) // Mezera mezi status a hostujícím týmem
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -146,19 +188,75 @@ fun MatchItem(match: Match, navController: NavController) {
                 )
             }
         }
-//        Column(modifier = Modifier.fillMaxWidth()) {
-//            match.goals?.forEach { goal ->
-//                val isHomeGoal = goal.team.name == match.homeTeam.name
-//                Box(modifier = Modifier.fillMaxWidth()) {
-//                    Text(
-//                        text = if (isHomeGoal) "${goal.minute}' ${goal.scorer.name}" else "${goal.scorer.name} ${goal.minute}'",
-//                        modifier = Modifier
-//                            .align(if (isHomeGoal) Alignment.CenterStart else Alignment.CenterEnd)
-//                            .padding(vertical = 4.dp),
-//                        style = MaterialTheme.typography.bodyLarge
-//                    )
-//                }
-//            }
-//        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Match events", modifier = Modifier.padding(top = 16.dp, bottom = 4.dp))
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color(0xFFE0E0E0),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            match.events.forEach { event ->
+                val arrangement = when {
+                    event.team.name == match.teams.home.name -> Arrangement.Start
+                    else -> Arrangement.End
+                }
+                val isYellow = when {
+                    event.detail == "Yellow Card" -> true
+                    else -> false
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = arrangement
+                ) {
+                    if (event.team.name == match.teams.home.name) {
+                        if (event.type == "Goal") {
+                            Text(text = "\u26BD", modifier = Modifier.padding(end = 4.dp))
+                            Text(text = "${event.time.elapsed}' ${event.player.name}")
+                        } else if (event.type == "subst") {
+                            Text(text = "\uD83D\uDD04", modifier = Modifier.padding(end = 4.dp))
+                            Text(text = event.player.name, fontWeight = FontWeight.Bold)
+                            Text(text = " " + event.assist?.name)
+                        } else if (event.type == "Card") {
+
+                            Text(
+                                text = if (isYellow) "\uD83D\uDFE8" else "\uD83D\uDFE5",
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                            Text(text = event.player.name)
+                        }
+                    } else {
+                        if (event.type == "Goal") {
+                            Text(text = "${event.player.name} ${event.time.elapsed}'")
+                            Text(text = "\u26BD", modifier = Modifier.padding(start = 4.dp))
+                        } else if (event.type == "subst") {
+                            Text(text = event.assist?.name + " ")
+                            Text(text = event.player.name, fontWeight = FontWeight.Bold)
+                            Text(text = "\uD83D\uDD04", modifier = Modifier.padding(start = 4.dp))
+                        } else if (event.type == "Card") {
+                            Text(text = event.player.name)
+                            Text(
+                                text = if (isYellow) "\uD83D\uDFE8" else "\uD83D\uDFE5",
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                    }
+                }
+                HorizontalDivider(
+                    color = Color.Gray.copy(alpha = 0.2f),
+                    thickness = 2.dp,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+        }
+
     }
 }
+

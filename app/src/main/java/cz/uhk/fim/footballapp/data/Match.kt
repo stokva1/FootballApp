@@ -6,7 +6,8 @@ data class Match(
     @SerializedName("fixture") val matchData: MatchData,
     @SerializedName("league") val league: League,
     @SerializedName("teams") val teams: Teams,
-    @SerializedName("goals") val goals: Goals
+    @SerializedName("goals") val goals: Goals,
+    @SerializedName("events") val events: List<MatchEvents>,
 
 //    @SerializedName("id") val id: String,
 //    @SerializedName("utcDate") val utcDate: String,
