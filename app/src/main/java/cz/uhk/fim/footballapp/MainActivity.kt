@@ -42,7 +42,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import cz.uhk.fim.footballapp.consts.BottomNavItem
 import cz.uhk.fim.footballapp.helpers.NotificationSchedulerHelper
 import cz.uhk.fim.footballapp.helpers.PermissionHelper
+import cz.uhk.fim.footballapp.screens.FavouriteMatchScreen
 import cz.uhk.fim.footballapp.screens.MatchListScreen
+import cz.uhk.fim.footballapp.screens.TeamDetailScreen
 import cz.uhk.fim.footballapp.ui.theme.FootballAppTheme
 import org.koin.android.ext.android.inject
 
@@ -109,7 +111,7 @@ fun MainScreen(navController: NavHostController) {
                     titleContentColor = Color.White
                 ),
                 navigationIcon = {
-                    if (currentRoute == Routes.MatchDetail || currentRoute == Routes.Settings) {
+                    if (currentRoute == Routes.MatchDetail || currentRoute == Routes.Settings || currentRoute == Routes.TeamDetail) {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
@@ -146,23 +148,22 @@ fun MainScreen(navController: NavHostController) {
                             )
                         },
                         label = { Text(item.title) },
-                        selected = selectedItem == index,
+                        selected = currentRoute == item.screenRoute,
                         onClick = {
-                            selectedItem = index
-                            navController.navigate(item.screenRoute) {
-                                navController.graph.startDestinationRoute?.let { screenRoute ->
-                                    popUpTo(screenRoute) {
-                                        saveState =
-                                            true
+                            if (currentRoute != item.screenRoute) {
+                                navController.navigate(item.screenRoute) {
+                                    navController.graph.startDestinationRoute?.let { screenRoute ->
+                                        popUpTo(screenRoute) {
+                                            saveState = true
+                                        }
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop =
-                                    true
-                                restoreState =
-                                    true
                             }
                         },
-                        colors = NavigationBarItemDefaults.colors(
+
+                                colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color.White,
                             unselectedIconColor = Color.LightGray,
                             selectedTextColor = Color.White,
@@ -193,7 +194,14 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 MatchDetailScreen(matchId.toInt(), navController = navController)
             }
         }
-//        composable(Routes.FavoriteTeams) { FavouriteCryptoScreen(navController) }
+        composable(Routes.TeamDetail) { navBackStackEntry ->
+            val teamId = navBackStackEntry.arguments?.getString("teamId")
+            if (teamId != null) {
+                println(teamId)
+                TeamDetailScreen(teamId.toInt(), navController = navController)
+            }
+        }
+        composable(Routes.FavoriteTeams) { FavouriteMatchScreen(navController) }
         composable(Routes.Settings) { SettingsScreen() }
     }
 }

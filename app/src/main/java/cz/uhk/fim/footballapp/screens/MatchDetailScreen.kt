@@ -35,8 +35,6 @@ fun MatchDetailScreen(
     val matchDetailResult by viewModel.matchDetail.collectAsState()
     val scrollState = rememberScrollState()
 
-    val context = LocalContext.current
-
     LaunchedEffect(Unit) {
         viewModel.getMatchDetail(matchId)
     }

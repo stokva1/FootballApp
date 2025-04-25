@@ -34,11 +34,6 @@ data class League(
     @SerializedName("id") val id: Int,
     )
 
-data class Venue(
-    @SerializedName("id") val id: Int,
-    @SerializedName("name") val name: String,
-)
-
 data class Status(
     @SerializedName("elapsed") val elapsed: Int?,
     @SerializedName("short") val short: String,
@@ -46,11 +41,11 @@ data class Status(
 )
 
 data class Teams(
-    @SerializedName("home") val home: Team,
-    @SerializedName("away") val away: Team
+    @SerializedName("home") val home: TeamsDetail,
+    @SerializedName("away") val away: TeamsDetail
 )
 
-data class Team(
+data class TeamsDetail(
     @SerializedName("id") val id: Int,
     @SerializedName("name") val name: String,
     @SerializedName("logo") val logo: String,

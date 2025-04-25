@@ -24,6 +24,8 @@ interface FootballApi {
         @Query("fixture") fixtureId: Int
     ): Response<FootballResponse<List<MatchEvents>>>
 
-    @GET("/teams/{teamId}")
-    suspend fun getTeamDetailsById(@Path("teamId") teamId: Int): Response<FootballResponse<List<Team>>>
+    @GET("/teams")
+    suspend fun getTeamDetails(
+        @Query("id") teamId: Int
+    ): Response<FootballResponse<List<Team>>>
 }

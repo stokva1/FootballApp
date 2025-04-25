@@ -26,26 +26,24 @@ class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
 //        startAutoRefresh()
     }
 
-    private fun startAutoRefresh() {
-        viewModelScope.launch {
-            while (true) {
-                getMatchList()
-                kotlinx.coroutines.delay(60_000L)
-            }
-        }
-    }
+//    private fun startAutoRefresh() {
+//        viewModelScope.launch {
+//            while (true) {
+//                getMatchList()
+//                kotlinx.coroutines.delay(60_000L)
+//            }
+//        }
+//    }
 
-    fun getMatchList() {
+    fun getMatchList(date: String) {
         viewModelScope.launch {
             _matchList.value = ApiResult.Loading
             try {
-                val sdf = SimpleDateFormat("yyyy-MM-dd")
-                val currentDate = sdf.format(Date())
-                val response = footballApi.getMatches(currentDate)
+                val response = footballApi.getMatches(date)
                 if (response.isSuccessful) {
                     val data = response.body()?.data
                     if(data != null){
-                        val filteredData = data.filter { it.league.id in listOf(82, 1, 2, 3, 39, 45, 61, 65, 78, 135, 140, 143, 528) }
+                        val filteredData = data.filter { it.league.id in listOf(169, 1, 2, 3, 39, 45, 61, 65, 78, 135, 140, 143, 528) }
 
                         _matchList.value = ApiResult.Success(filteredData)
 //                        _matchList.value = ApiResult.Success(data)

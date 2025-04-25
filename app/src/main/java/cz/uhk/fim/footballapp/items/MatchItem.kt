@@ -82,20 +82,21 @@ fun MatchItem(match: Match, navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            // Domácí tým
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController.navigate(Routes.matchDetail(match.matchData.id.toString())) },
-
                 ) {
                 AsyncImage(
                     model = match.teams.home.logo,
                     contentDescription = "${match.teams.home.name} icon",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clickable {
+                            navController.navigate(Routes.teamDetail(match.teams.home.id.toString()))
+                        },
                 )
-                Spacer(modifier = Modifier.height(8.dp)) // Přidání mezery mezi crest a názvem týmu
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = match.teams.home.name,
                     fontWeight = if (match.teams.home.winner == true) FontWeight.Bold else FontWeight.Normal,
@@ -172,12 +173,15 @@ fun MatchItem(match: Match, navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController.navigate(Routes.matchDetail(match.matchData.id.toString())) },
             ) {
                 AsyncImage(
                     model = match.teams.away.logo,
                     contentDescription = "${match.teams.away.name} icon",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clickable {
+                            navController.navigate(Routes.teamDetail(match.teams.away.id.toString()))
+                        },
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

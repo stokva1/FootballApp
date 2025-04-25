@@ -12,6 +12,6 @@ object Routes {
     }
 
     fun teamDetail(teamId: String): String {
-        return "teamDetail/teamId"
+        return "teamDetail/$teamId"
     }
 }
