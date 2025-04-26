@@ -28,4 +28,9 @@ interface FootballApi {
     suspend fun getTeamDetails(
         @Query("id") teamId: Int
     ): Response<FootballResponse<List<Team>>>
+
+    @GET("/teams")
+    suspend fun getTeamsByName(
+        @Query("name") name: String
+    ) : Response<FootballResponse<List<Team>>>
 }

@@ -2,26 +2,18 @@ package cz.uhk.fim.footballapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.util.CoilUtils.result
 import cz.uhk.fim.footballapp.api.ApiResult
-import cz.uhk.fim.footballapp.api.FootballApi
 import cz.uhk.fim.footballapp.data.FavouriteTeamEntity
 import cz.uhk.fim.footballapp.data.Team
-import cz.uhk.fim.footballapp.repository.FavouriteTeamRepository
-import kotlinx.coroutines.delay
+import cz.uhk.fim.footballapp.repository.FavouriteTeamsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
-import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class FavouriteMatchViewModel(
-    private val favouriteTeamRepository: FavouriteTeamRepository,
+class FavouriteTeamsViewModel(
+    private val favouriteTeamRepository: FavouriteTeamsRepository,
 ) : ViewModel() {
 
     private val _favouriteTeams = MutableStateFlow<ApiResult<List<FavouriteTeamEntity>>>(ApiResult.Loading)

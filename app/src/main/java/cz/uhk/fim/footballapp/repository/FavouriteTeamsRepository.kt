@@ -6,7 +6,7 @@ import cz.uhk.fim.footballapp.data.Team
 import io.objectbox.Box
 import io.objectbox.query.QueryBuilder
 
-class FavouriteTeamRepository(private val favouriteTeamBox: Box<FavouriteTeamEntity>) {
+class FavouriteTeamsRepository(private val favouriteTeamBox: Box<FavouriteTeamEntity>) {
     fun addFavouriteTeam(team: Team) {
         val existingEntity = favouriteTeamBox.query()
             .equal(FavouriteTeamEntity_.teamId, team.team.id.toString(), QueryBuilder.StringOrder.CASE_INSENSITIVE)
@@ -22,7 +22,6 @@ class FavouriteTeamRepository(private val favouriteTeamBox: Box<FavouriteTeamEnt
             val favouriteTeamEntity = FavouriteTeamEntity(teamId = team.team.id.toString(), name = team.team.name, logo = team.team.logo)
             favouriteTeamBox.put(favouriteTeamEntity)
         }
-
     }
 
     fun removeFavouriteTeam(teamId: String) {

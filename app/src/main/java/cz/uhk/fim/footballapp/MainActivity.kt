@@ -38,12 +38,14 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import android.widget.Toast
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.navigation.compose.currentBackStackEntryAsState
 import cz.uhk.fim.footballapp.consts.BottomNavItem
 import cz.uhk.fim.footballapp.helpers.NotificationSchedulerHelper
 import cz.uhk.fim.footballapp.helpers.PermissionHelper
 import cz.uhk.fim.footballapp.screens.FavouriteMatchScreen
 import cz.uhk.fim.footballapp.screens.MatchListScreen
+import cz.uhk.fim.footballapp.screens.SearchScreen
 import cz.uhk.fim.footballapp.screens.TeamDetailScreen
 import cz.uhk.fim.footballapp.ui.theme.FootballAppTheme
 import org.koin.android.ext.android.inject
@@ -131,7 +133,15 @@ fun MainScreen(navController: NavHostController) {
                             )
                         }
                     }
+                    IconButton(onClick = { navController.navigate(Routes.Search) }) {
+                        Icon(
+                            Icons.Default.Search,
+                            tint = Color.White,
+                            contentDescription = "Search"
+                        )
+                    }
                 }
+
             )
         },
 
@@ -150,6 +160,7 @@ fun MainScreen(navController: NavHostController) {
                         label = { Text(item.title) },
                         selected = currentRoute == item.screenRoute,
                         onClick = {
+                            //TODO nejak opravit aby fungovalo preklikavani z search na home
                             if (currentRoute != item.screenRoute) {
                                 navController.navigate(item.screenRoute) {
                                     navController.graph.startDestinationRoute?.let { screenRoute ->
@@ -203,6 +214,8 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
         }
         composable(Routes.FavoriteTeams) { FavouriteMatchScreen(navController) }
         composable(Routes.Settings) { SettingsScreen() }
+        composable(Routes.Search) { SearchScreen(navController) }
+
     }
 }
 
