@@ -1,4 +1,5 @@
 package cz.uhk.fim.footballapp.helpers
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -7,10 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 
-//úkol č. 3
 class PermissionHelper(private val activity: ComponentActivity) {
 
-    private var requestPermissionLauncher= activity.registerForActivityResult(
+    private var requestPermissionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {

@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,12 +32,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cz.uhk.fim.footballapp.consts.Routes
-import cz.uhk.fim.footballapp.screens.SettingsScreen
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import android.widget.Toast
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import cz.uhk.fim.footballapp.consts.BottomNavItem
 import cz.uhk.fim.footballapp.helpers.NotificationSchedulerHelper
@@ -107,13 +111,13 @@ fun MainScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Futbolive") },
+                title = { Text("Futbolive", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White
                 ),
                 navigationIcon = {
-                    if (currentRoute == Routes.MatchDetail || currentRoute == Routes.Settings || currentRoute == Routes.TeamDetail) {
+                    if (currentRoute == Routes.MatchDetail || currentRoute == Routes.TeamDetail || currentRoute == Routes.Search) {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
@@ -124,15 +128,6 @@ fun MainScreen(navController: NavHostController) {
                     }
                 },
                 actions = {
-                    if (currentRoute != Routes.Settings) {
-                        IconButton(onClick = { navController.navigate(Routes.Settings) }) {
-                            Icon(
-                                Icons.Filled.Settings,
-                                tint = Color.White,
-                                contentDescription = "Settings"
-                            )
-                        }
-                    }
                     IconButton(onClick = { navController.navigate(Routes.Search) }) {
                         Icon(
                             Icons.Default.Search,
@@ -141,31 +136,37 @@ fun MainScreen(navController: NavHostController) {
                         )
                     }
                 }
-
             )
         },
 
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)) 
             ) {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
                         icon = {
                             Icon(
                                 item.icon,
-                                contentDescription = item.title
+                                contentDescription = item.title,
+                                modifier = Modifier.size(28.dp)
                             )
                         },
-                        label = { Text(item.title) },
+                        label = {
+                            Text(
+                                item.title,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (currentRoute == item.screenRoute) Color.White else Color.LightGray
+                            )
+                        },
                         selected = currentRoute == item.screenRoute,
                         onClick = {
-                            //TODO nejak opravit aby fungovalo preklikavani z search na home
                             if (currentRoute != item.screenRoute) {
                                 navController.navigate(item.screenRoute) {
-                                    navController.graph.startDestinationRoute?.let { screenRoute ->
-                                        popUpTo(screenRoute) {
-                                            saveState = true
+                                    if (item.screenRoute == Routes.MatchList) {
+                                        popUpTo(Routes.MatchList) {
+                                            inclusive = true
                                         }
                                     }
                                     launchSingleTop = true
@@ -173,10 +174,9 @@ fun MainScreen(navController: NavHostController) {
                                 }
                             }
                         },
-
-                                colors = NavigationBarItemDefaults.colors(
+                        colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color.White,
-                            unselectedIconColor = Color.LightGray,
+                            unselectedIconColor = Color.DarkGray,
                             selectedTextColor = Color.White,
                             unselectedTextColor = Color.LightGray,
                             indicatorColor = MaterialTheme.colorScheme.secondary
@@ -209,13 +209,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
             val teamId = navBackStackEntry.arguments?.getString("teamId")
             if (teamId != null) {
                 println(teamId)
-                TeamDetailScreen(teamId.toInt(), navController = navController)
+                TeamDetailScreen(teamId.toInt())
             }
         }
-        composable(Routes.FavoriteTeams) { FavouriteMatchScreen(navController) }
-        composable(Routes.Settings) { SettingsScreen() }
+        composable(Routes.FavoriteTeams) { FavouriteMatchScreen() }
         composable(Routes.Search) { SearchScreen(navController) }
-
     }
 }
 
@@ -225,5 +223,4 @@ fun MainScreenPreview() {
     FootballAppTheme {
         MainScreen(rememberNavController())
     }
-
 }

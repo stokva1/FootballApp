@@ -10,10 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Date
 
 class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
     private val _matchList = MutableStateFlow<ApiResult<List<Match>>>(ApiResult.Loading)
@@ -81,7 +77,4 @@ class MatchViewModel(private val footballApi: FootballApi):ViewModel() {
             }
         }
     }
-
-
-
 }

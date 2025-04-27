@@ -1,5 +1,6 @@
 package cz.uhk.fim.footballapp.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,33 +36,39 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cz.uhk.fim.footballapp.api.ApiResult
 import cz.uhk.fim.footballapp.items.MatchListItem
+import cz.uhk.fim.footballapp.viewmodels.FavouriteTeamsViewModel
 import cz.uhk.fim.footballapp.viewmodels.MatchViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 
 @Composable
 fun MatchListScreen(
     navController: NavController,
     viewModel: MatchViewModel = koinViewModel(),
+    favouriteViewModel: FavouriteTeamsViewModel = koinViewModel()
 ) {
     val listState = rememberLazyListState()
     val matchList by viewModel.matchList.collectAsState()
     val calendar = remember { mutableStateOf(Calendar.getInstance()) }
     val sdf = remember { SimpleDateFormat("d.M.") }
     val apiSdf = remember { SimpleDateFormat("yyyy-MM-dd") }
-
     val currentDate = sdf.format(calendar.value.time)
-
 
     LaunchedEffect(calendar.value.time) {
         val formattedDate = apiSdf.format(calendar.value.time)
         viewModel.getMatchList(formattedDate)
     }
 
+    LaunchedEffect(Unit) {
+        favouriteViewModel.loadFavouriteTeams()
+    }
 
-    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp)
+            .fillMaxWidth()
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -97,7 +103,11 @@ fun MatchListScreen(
                 }
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+
+        HorizontalDivider(
+            thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp)
+        )
+
         when (matchList) {
             is ApiResult.Loading -> {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -106,16 +116,79 @@ fun MatchListScreen(
             }
 
             is ApiResult.Success -> {
-
                 val matchList = (matchList as ApiResult.Success).data
+
+                val favouriteMatches = matchList.filter { match ->
+                    favouriteViewModel.isFavourite(match.teams.home.id.toString()) || favouriteViewModel.isFavourite(
+                        match.teams.away.id.toString()
+                    )
+                }
+
+                val otherMatches = matchList.filter { match ->
+                    !(favouriteViewModel.isFavourite(match.teams.home.id.toString()) || favouriteViewModel.isFavourite(
+                        match.teams.away.id.toString()
+                    ))
+                }
+
                 LazyColumn(state = listState) {
-                    items(matchList) { match ->
-                        MatchListItem(
-                            match = match,
-                            navController = navController,
-                        )
+                    item {
+                        Text(text = "Favourites", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    }
+
+                    if (favouriteMatches.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize().padding(top = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No matches scheduled",
+                                    fontSize = 18.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    } else {
+                        items(favouriteMatches) { match ->
+                            MatchListItem(
+                                match = match,
+                                navController = navController,
+                            )
+                        }
+
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text(text = "Others", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    }
+
+                    if (otherMatches.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize().padding(top = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No matches scheduled",
+                                    fontSize = 18.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    } else {
+
+                        items(otherMatches) { match ->
+                            MatchListItem(
+                                match = match,
+                                navController = navController,
+                            )
+                        }
                     }
                 }
+
             }
 
             is ApiResult.Error -> {

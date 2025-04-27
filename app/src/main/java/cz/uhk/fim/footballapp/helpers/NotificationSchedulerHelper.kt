@@ -9,7 +9,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import cz.uhk.fim.footballapp.workers.NotificationWorker
 import java.util.concurrent.TimeUnit
-//úkol č. 3
+
 class NotificationSchedulerHelper(private val context: Context) {
 
     fun scheduleNotificationWorker() {

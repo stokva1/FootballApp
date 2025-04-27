@@ -9,17 +9,24 @@ import io.objectbox.query.QueryBuilder
 class FavouriteTeamsRepository(private val favouriteTeamBox: Box<FavouriteTeamEntity>) {
     fun addFavouriteTeam(team: Team) {
         val existingEntity = favouriteTeamBox.query()
-            .equal(FavouriteTeamEntity_.teamId, team.team.id.toString(), QueryBuilder.StringOrder.CASE_INSENSITIVE)
+            .equal(
+                FavouriteTeamEntity_.teamId,
+                team.team.id.toString(),
+                QueryBuilder.StringOrder.CASE_INSENSITIVE
+            )
             .build().findFirst()
 
         if (existingEntity != null) {
-            // Entita již existuje, aktualizujeme ji
             existingEntity.name = team.team.name
             existingEntity.logo = team.team.logo
             favouriteTeamBox.put(existingEntity)
         } else {
-            // Entita neexistuje, vytvoříme novou
-            val favouriteTeamEntity = FavouriteTeamEntity(teamId = team.team.id.toString(), name = team.team.name, logo = team.team.logo)
+            val favouriteTeamEntity = FavouriteTeamEntity(
+                teamId = team.team.id.toString(),
+                name = team.team.name,
+                logo = team.team.logo,
+                country = team.team.country
+            )
             favouriteTeamBox.put(favouriteTeamEntity)
         }
     }

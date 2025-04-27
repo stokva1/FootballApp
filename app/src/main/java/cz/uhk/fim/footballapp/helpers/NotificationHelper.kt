@@ -21,13 +21,12 @@ class NotificationHelper(private val context: Context) {
         var notificationCounter = 1
     }
 
-    //při vzniku nové instance (zavolání konstruktoru) se provede inicializace
     init {
         createNotificationChannel()
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //kanály jsou k dispozici až od API 26
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Futbolive Notifications"
             val descriptionText = "Notifications about football score"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -43,17 +42,13 @@ class NotificationHelper(private val context: Context) {
 
     fun showNotification(title: String, message: String) {
 
-        ///umožníme, aby se při kliknutí na notifikaci otevřela naše aplikace, konkrétně MainActivity
-        //intenty se typicky používají pro otevírání jiných apliakcí či systémových aplikací jako kamera, galerie, správce souborů atd.
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            //pokud neběží spustí se jako nová task, pokud běží vyčistí stack a vytvoří novou instanci
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             context,
-            0, //používáme se pokud chceme posléze z intentu zpracovat nějaký výsledek,
-            // zkontrolujeme shodu request kodu a patřičně zareagujeme, zde nepotřebujeme, takže dáme 0
-            intent, //předáem vytvořený intent
+            0,
+            intent,
             PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -70,15 +65,15 @@ class NotificationHelper(private val context: Context) {
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
-        with(NotificationManagerCompat.from(context)) {//opět zkontrolujeme oprávnění
+        with(NotificationManagerCompat.from(context)) {
             if (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ) {
-                return //pokud nemáme ukončíme vykonávání funkce
+                return
             }
-            notify(notificationCounter++, builder.build()) //jinak notifikujeme
+            notify(notificationCounter++, builder.build())
         }
     }
 }

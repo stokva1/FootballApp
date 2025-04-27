@@ -8,18 +8,6 @@ data class Match(
     @SerializedName("teams") val teams: Teams,
     @SerializedName("goals") val goals: Goals,
     @SerializedName("events") val events: List<MatchEvents>,
-
-//    @SerializedName("id") val id: String,
-//    @SerializedName("utcDate") val utcDate: String,
-//    @SerializedName("status") val status: String,
-//    @SerializedName("minute") val minute: String?,
-//    @SerializedName("injuryTime") val injuryTime: Int?,
-//    @SerializedName("venue") val venue: String?,
-//    @SerializedName("stage") val stage: String,
-//    @SerializedName("homeTeam") val homeTeam: Team,
-//    @SerializedName("awayTeam") val awayTeam: Team,
-//    @SerializedName("score") val score: Score,
-//    @SerializedName("goals") val goals: List<Goal>?,
 )
 
 data class MatchData(
@@ -32,7 +20,7 @@ data class MatchData(
 
 data class League(
     @SerializedName("id") val id: Int,
-    )
+)
 
 data class Status(
     @SerializedName("elapsed") val elapsed: Int?,

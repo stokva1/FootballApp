@@ -6,4 +6,5 @@
     <string name="i_know_what_i_am_doing_label">I know what Im doing.</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_remove">Delete</string>
+    <string name="enter_team_name_label">Enter team name</string>
 </resources>

@@ -41,8 +41,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,11 +49,9 @@ import coil.compose.AsyncImage
 import cz.uhk.fim.footballapp.consts.Routes
 import cz.uhk.fim.footballapp.data.Match
 import cz.uhk.fim.footballapp.utils.formatToLocalDateTime
-import cz.uhk.fim.footballapp.utils.formatToLocalTime
 
 @Composable
 fun MatchItem(match: Match, navController: NavController) {
-    val context = LocalContext.current
     val status = when {
         match.matchData.status.short in listOf("TBD", "NS") -> "S"
         match.matchData.status.short in listOf(
@@ -86,7 +82,7 @@ fun MatchItem(match: Match, navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
-                ) {
+            ) {
                 AsyncImage(
                     model = match.teams.home.logo,
                     contentDescription = "${match.teams.home.name} icon",
@@ -196,7 +192,7 @@ fun MatchItem(match: Match, navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Match events", modifier = Modifier.padding(top = 16.dp, bottom = 4.dp))
+            Text(text = "Match events", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 16.dp, bottom = 4.dp))
         }
         Column(
             modifier = Modifier
@@ -220,36 +216,43 @@ fun MatchItem(match: Match, navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = arrangement
                 ) {
-                    if (event.team.name == match.teams.home.name) {
-                        if (event.type == "Goal") {
-                            Text(text = "\u26BD", modifier = Modifier.padding(end = 4.dp))
-                            Text(text = "${event.time.elapsed}' ${event.player.name}")
-                        } else if (event.type == "subst") {
-                            Text(text = "\uD83D\uDD04", modifier = Modifier.padding(end = 4.dp))
-                            Text(text = event.player.name, fontWeight = FontWeight.Bold)
-                            Text(text = " " + event.assist?.name)
-                        } else if (event.type == "Card") {
+                    val isHomeTeam = event.team.name == match.teams.home.name
+                    val elapsedTime = "${event.time.elapsed}'"
+                    val playerName = event.player.name
+                    val assistName = event.assist?.name.orEmpty()
 
-                            Text(
-                                text = if (isYellow) "\uD83D\uDFE8" else "\uD83D\uDFE5",
-                                modifier = Modifier.padding(end = 4.dp)
-                            )
-                            Text(text = event.player.name)
+                    when (event.type) {
+                        "Goal" -> {
+                            if (isHomeTeam) {
+                                Text(text = "\u26BD", modifier = Modifier.padding(end = 4.dp))
+                                Text(text = "$elapsedTime $playerName")
+                            } else {
+                                Text(text = "$playerName $elapsedTime")
+                                Text(text = "\u26BD", modifier = Modifier.padding(start = 4.dp))
+                            }
                         }
-                    } else {
-                        if (event.type == "Goal") {
-                            Text(text = "${event.player.name} ${event.time.elapsed}'")
-                            Text(text = "\u26BD", modifier = Modifier.padding(start = 4.dp))
-                        } else if (event.type == "subst") {
-                            Text(text = event.assist?.name + " ")
-                            Text(text = event.player.name, fontWeight = FontWeight.Bold)
-                            Text(text = "\uD83D\uDD04", modifier = Modifier.padding(start = 4.dp))
-                        } else if (event.type == "Card") {
-                            Text(text = event.player.name)
-                            Text(
-                                text = if (isYellow) "\uD83D\uDFE8" else "\uD83D\uDFE5",
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
+
+                        "subst" -> {
+                            if (isHomeTeam) {
+                                Text(text = "\uD83D\uDD04 $elapsedTime", modifier = Modifier.padding(end = 4.dp))
+                                Text(text = playerName, fontWeight = FontWeight.Bold)
+                                Text(text = " $assistName")
+                            } else {
+                                Text(text = "$assistName ")
+                                Text(text = playerName, fontWeight = FontWeight.Bold)
+                                Text(text = "$elapsedTime \uD83D\uDD04", modifier = Modifier.padding(start = 4.dp))
+                            }
+                        }
+
+                        "Card" -> {
+                            val cardEmoji = if (isYellow) "\uD83D\uDFE8" else "\uD83D\uDFE5"
+                            if (isHomeTeam) {
+                                Text(text = cardEmoji, modifier = Modifier.padding(end = 4.dp))
+                                Text(text = "$elapsedTime $playerName")
+                            } else {
+                                Text(text = "$playerName $elapsedTime")
+                                Text(text = cardEmoji, modifier = Modifier.padding(start = 4.dp))
+                            }
                         }
                     }
                 }

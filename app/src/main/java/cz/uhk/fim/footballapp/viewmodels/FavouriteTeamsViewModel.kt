@@ -16,8 +16,10 @@ class FavouriteTeamsViewModel(
     private val favouriteTeamRepository: FavouriteTeamsRepository,
 ) : ViewModel() {
 
-    private val _favouriteTeams = MutableStateFlow<ApiResult<List<FavouriteTeamEntity>>>(ApiResult.Loading)
-    val favouriteTeams: StateFlow<ApiResult<List<FavouriteTeamEntity>>> = _favouriteTeams.asStateFlow()
+    private val _favouriteTeams =
+        MutableStateFlow<ApiResult<List<FavouriteTeamEntity>>>(ApiResult.Loading)
+    val favouriteTeams: StateFlow<ApiResult<List<FavouriteTeamEntity>>> =
+        _favouriteTeams.asStateFlow()
 
     init {
         loadFavouriteTeams()
@@ -43,9 +45,16 @@ class FavouriteTeamsViewModel(
                 val favs = favouriteTeamRepository.getAllFavouriteTeams()
                 _favouriteTeams.value = ApiResult.Success(favs)
             } catch (e: Exception) {
-                _favouriteTeams.value = ApiResult.Error("Failed to load favourite teams: ${e.message}")
+                _favouriteTeams.value =
+                    ApiResult.Error("Failed to load favourite teams: ${e.message}")
             }
         }
+    }
+
+    fun isFavourite(teamId: String): Boolean {
+        val favouriteTeamsList =
+            (_favouriteTeams.value as? ApiResult.Success<List<FavouriteTeamEntity>>)?.data
+        return favouriteTeamsList?.any { it.teamId == teamId } ?: false
     }
 }
 

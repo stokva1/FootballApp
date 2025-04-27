@@ -5,7 +5,6 @@ object Routes {
     const val MatchDetail = "matchDetail/{matchId}"
     const val FavoriteTeams = "favoriteTeams"
     const val TeamDetail = "teamDetail/{teamId}"
-    const val Settings = "settings"
     const val Search = "search"
 
     fun matchDetail(matchId: String): String {

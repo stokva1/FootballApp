@@ -42,8 +42,24 @@ import cz.uhk.fim.footballapp.data.Match
 import cz.uhk.fim.footballapp.utils.formatToLocalTime
 
 @Composable
-fun MatchListItem(match: Match, navController: NavController){
-    val context = LocalContext.current
+fun MatchListItem(match: Match, navController: NavController) {
+    val status = when {
+        match.matchData.status.short in listOf("TBD", "NS") -> "S"
+        match.matchData.status.short in listOf(
+            "1H",
+            "HT",
+            "2H",
+            "ET",
+            "BT",
+            "P",
+            "SUSP",
+            "INT",
+            "LIVE"
+        ) -> "L"
+
+        match.matchData.status.short in listOf("FT", "AET", "PEN") -> "F"
+        else -> "none"
+    }
 
     Row(
         modifier = Modifier
@@ -55,57 +71,26 @@ fun MatchListItem(match: Match, navController: NavController){
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
-        if (match.matchData.status.short in listOf("TBD", "NS")){
+        if (status == "S") {
             Text(text = formatToLocalTime(match.matchData.date))
-        } else if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")){
-
-            Text(text = match.matchData.status.elapsed.toString(),
-                color = Color.Red)
-        } else if (match.matchData.status.short in listOf("FT", "AET", "PEN")){
+        } else if (status == "L") {
+            Text(
+                text = match.matchData.status.elapsed.toString(),
+                color = Color.Red
+            )
+        } else if (status == "F") {
             Text(text = "F")
-        }else{
+        } else {
             Text(text = match.matchData.status.short)
         }
-
 
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AsyncImage(
-                    model = match.teams.home.logo,
-                    contentDescription = "${match.teams.home.name} icon",
-                    modifier = Modifier.size(22.dp),
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = match.teams.home.name,
-                    fontWeight = if (match.teams.home.winner == true) FontWeight.Bold else FontWeight.Normal
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = (match.goals.home ?: 0).toString(),
-                    color = if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")) Color.Red else Color.Black
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AsyncImage(
-                    model = match.teams.away.logo,
-                    contentDescription = "${match.teams.away.name} icon",
-                    modifier = Modifier.size(22.dp),
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = match.teams.away.name,
-                    fontWeight = if (match.teams.away.winner == true) FontWeight.Bold else FontWeight.Normal
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = (match.goals.away ?: 0).toString(),
-                    color = if (match.matchData.status.short in listOf("1H", "HT", "2H", "ET", "BT", "P", "SUSP", "INT", "LIVE")) Color.Red else Color.Black
-                )
-            }
+            TeamRow(match.teams.home.logo, match.teams.home.name, match.teams.home.winner, match.goals.home, status)
+            TeamRow(match.teams.away.logo, match.teams.away.name, match.teams.away.winner, match.goals.away, status)
         }
+
     }
     HorizontalDivider(
         color = Color.LightGray.copy(alpha = 0.9f),
@@ -113,4 +98,31 @@ fun MatchListItem(match: Match, navController: NavController){
         modifier = Modifier.padding(start = 8.dp, end = 8.dp)
     )
 
+}
+
+@Composable
+fun TeamRow(
+    logoUrl: String,
+    teamName: String,
+    isWinner: Boolean?,
+    goals: Int?,
+    status: String
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        AsyncImage(
+            model = logoUrl,
+            contentDescription = "$teamName icon",
+            modifier = Modifier.size(22.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = teamName,
+            fontWeight = if (isWinner == true) FontWeight.Bold else FontWeight.Normal
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = (goals ?: 0).toString(),
+            color = if (status == "L") Color.Red else Color.Black
+        )
+    }
 }

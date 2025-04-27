@@ -37,7 +37,8 @@ class NetworkMonitorHelper(context: Context) {
         connectivityManager.registerNetworkCallback(networkRequest, callback)
 
         val isCurrentlyConnected = connectivityManager.activeNetwork?.let {
-            connectivityManager.getNetworkCapabilities(it)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            connectivityManager.getNetworkCapabilities(it)
+                ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         } ?: false
         launch { send(isCurrentlyConnected) }
 

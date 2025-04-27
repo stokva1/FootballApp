@@ -32,5 +32,5 @@ interface FootballApi {
     @GET("/teams")
     suspend fun getTeamsByName(
         @Query("name") name: String
-    ) : Response<FootballResponse<List<Team>>>
+    ): Response<FootballResponse<List<Team>>>
 }
