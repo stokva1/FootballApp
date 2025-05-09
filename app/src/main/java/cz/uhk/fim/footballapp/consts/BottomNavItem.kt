@@ -2,12 +2,10 @@ package cz.uhk.fim.footballapp.consts
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector, val screenRoute: String) {
-    object MatchList : BottomNavItem("Matches", Icons.Filled.Home, Routes.MatchList)
-    object FavouriteTeams : BottomNavItem("Favorite", Icons.Filled.Favorite, Routes.FavoriteTeams)
+    object MatchList : BottomNavItem("Home", Icons.Filled.Home, Routes.MatchList)
+    object FavouriteTeams : BottomNavItem("Favourite", Icons.Filled.Favorite, Routes.FavouriteTeams)
 }

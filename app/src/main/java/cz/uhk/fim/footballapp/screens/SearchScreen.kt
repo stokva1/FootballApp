@@ -96,14 +96,7 @@ fun SearchScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
 
-            is ApiResult.Error -> {
-                Text(
-                    text = "Error: ${(teamListResult as ApiResult.Error).message}",
-                    color = Color.Red
-                )
-            }
-
-            is ApiResult.Success<*> -> {
+            is ApiResult.Success<List<Team>> -> {
                 val teams = (teamListResult as ApiResult.Success<List<Team>>).data
                 if (teams.isEmpty() && wasSearched) {
                     Text(
@@ -142,6 +135,13 @@ fun SearchScreen(
                         }
                     }
                 }
+            }
+
+            is ApiResult.Error -> {
+                Text(
+                    text = "Error: ${(teamListResult as ApiResult.Error).message}",
+                    color = Color.Red
+                )
             }
         }
     }

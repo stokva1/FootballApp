@@ -27,7 +27,6 @@ class NetworkMonitorHelper(context: Context) {
                 super.onLost(network)
                 launch { send(false) }
             }
-
         }
 
         val networkRequest = NetworkRequest.Builder()

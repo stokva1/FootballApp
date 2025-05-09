@@ -3,7 +3,7 @@ package cz.uhk.fim.footballapp.consts
 object Routes {
     const val MatchList = "matchList"
     const val MatchDetail = "matchDetail/{matchId}"
-    const val FavoriteTeams = "favoriteTeams"
+    const val FavouriteTeams = "favoriteTeams"
     const val TeamDetail = "teamDetail/{teamId}"
     const val Search = "search"
 

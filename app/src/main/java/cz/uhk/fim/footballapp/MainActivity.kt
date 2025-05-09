@@ -98,7 +98,6 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    var selectedItem by remember { mutableStateOf(0) }
 
     val items = listOf(
         BottomNavItem.MatchList,
@@ -176,7 +175,7 @@ fun MainScreen(navController: NavHostController) {
                         },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color.White,
-                            unselectedIconColor = Color.DarkGray,
+                            unselectedIconColor = Color.LightGray,
                             selectedTextColor = Color.White,
                             unselectedTextColor = Color.LightGray,
                             indicatorColor = MaterialTheme.colorScheme.secondary
@@ -212,7 +211,7 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
                 TeamDetailScreen(teamId.toInt())
             }
         }
-        composable(Routes.FavoriteTeams) { FavouriteMatchScreen() }
+        composable(Routes.FavouriteTeams) { FavouriteMatchScreen() }
         composable(Routes.Search) { SearchScreen(navController) }
     }
 }
